@@ -29,7 +29,10 @@ export default function Products() {
 
     // --- 🔍 Search filter ---
     const filtered = rows.filter((row) =>
-      row.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+      row.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.id.toLowerCase().includes(searchTerm.toLowerCase())
+      
     );
 
     // --- 🔽 Sorting ---
