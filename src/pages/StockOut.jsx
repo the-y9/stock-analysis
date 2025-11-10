@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, RefreshCcw } from "lucide-react";
+import { Search, RefreshCcw, Menu } from "lucide-react";
 import SideBar from "../components/SideBar";
 import NavSidebar from "./NavSidebar";
 import { useStockData } from "../context/StockDataContext";
@@ -16,7 +16,7 @@ export default function StockOut() {
 const processedStockOut = useMemo(() => {
   const stockOutList = Array.isArray(stockData?.stockout) ? stockData.stockout : [];
   const products = Array.isArray(stockData?.products) ? stockData.products : [];
-//   console.log(stockOutList);
+  console.log(stockOutList);
 
   const rows = stockOutList.map((item) => {
     const product = products.find((p) => p.stock_no === item.product); // ✅ match by product code
@@ -104,15 +104,25 @@ const processedStockOut = useMemo(() => {
         {/* --- Header --- */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-semibold">Stock In</h2>
+            <h2 className="text-2xl font-semibold">Stock Out</h2>
             <p className="text-gray-500 text-sm">
-              As of {new Date().toLocaleDateString("en-US", {
+              {new Date().toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
               })}
             </p>
-          </div>
+                  </div>
+                  
+          <div className="flex items-center gap-2">
+            <button
+              className="md:hidden p-2 rounded-lg border text-gray-700 hover:bg-gray-100"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={22} />
+            </button>
+            
+          </div>  
         </div>
 
         {/* --- Stock Summary --- */}
@@ -199,7 +209,7 @@ const processedStockOut = useMemo(() => {
                     {/* <td className="px-4 py-2">{row.rate}</td>
                     <td className="px-4 py-2">{row.value}</td> */}
                         <td className="px-4 py-2">
-                            {row.Date && new Date(row.date).toLocaleDateString("en-US", {
+                            {row.date && new Date(row.date).toLocaleDateString("en-US", {
                                 month: "long",
                                 day: "2-digit",
                                 year: "numeric",

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, RefreshCcw } from "lucide-react";
+import { Search, RefreshCcw, Menu } from "lucide-react";
 import SideBar from "../components/SideBar";
 import NavSidebar from "./NavSidebar";
 import { useStockData } from "../context/StockDataContext";
@@ -15,12 +15,14 @@ export default function Products() {
   // --- 🔢 Process products list ---
   const processedProducts = useMemo(() => {
     const products = Array.isArray(stockData?.products) ? stockData.products : [];
+// console.log(products);
 
     const rows = products.map((item) => ({
-      id: item.id,
+      id: item.stock_no,
       stock_no: item.stock_no,
       product_name: item.product_name || "Unnamed Product",
-      category: item.category || "Other",
+        category: item.category || "Other",
+        supervisor_50: item.supervisor_50 || "",
       qty: Number(item.qty) || 0,
       rate: Number(item.rate) || 0,
     }));
@@ -50,7 +52,7 @@ export default function Products() {
   }
 
   const totalProducts = processedProducts.length;
-  const totalQty = processedProducts.reduce((sum, i) => sum + i.qty, 0);
+//   const totalQty = processedProducts.reduce((sum, i) => sum + i.qty, 0);
 
   // --- 🧭 Sort handler ---
   const handleSort = (field) => {
@@ -99,13 +101,23 @@ export default function Products() {
           <div>
             <h2 className="text-2xl font-semibold">Products</h2>
             <p className="text-gray-500 text-sm">
-              As of {new Date().toLocaleDateString("en-US", {
+              {new Date().toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
               })}
             </p>
-          </div>
+                  </div>
+                  
+          <div className="flex items-center gap-2">
+            <button
+              className="md:hidden p-2 rounded-lg border text-gray-700 hover:bg-gray-100"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={22} />
+            </button>
+            
+          </div>  
         </div>
 
         {/* --- Products Summary --- */}
@@ -149,8 +161,8 @@ export default function Products() {
                   { key: "stock_no", label: "Product Code" },
                   { key: "product_name", label: "Product Name" },
                   { key: "category", label: "Category" },
-                  { key: "qty", label: "Qty" },
-                  { key: "rate", label: "Rate (₹)" },
+                  { key: "supervisor_50", label: "50 %" },
+                //   { key: "rate", label: "Rate (₹)" },
                 ].map(({ key, label }) => (
                   <th
                     key={key}
@@ -182,8 +194,8 @@ export default function Products() {
                     <td className="px-4 py-2">{row.stock_no}</td>
                     <td className="px-4 py-2">{row.product_name}</td>
                     <td className="px-4 py-2">{row.category}</td>
-                    <td className="px-4 py-2">{row.qty}</td>
-                    <td className="px-4 py-2">{row.rate}</td>
+                    <td className="px-4 py-2">{row.supervisor_50}</td>
+                    {/* <td className="px-4 py-2">{row.rate}</td> */}
                   </tr>
                 ))
               )}

@@ -25,13 +25,13 @@ const GenericLineChart = ({
   rightAxis = false,
   interval = "daily",
 }) => {
-  // Compute dynamic angle based on container width and number of data points
-  const getLabelAngle = (dataLength, containerWidth) => {
-    if (dataLength <= 3) return 0;
-    // Minimum width per label = 50px (adjustable)
-    const angle = -Math.min(90, Math.max(0, ((dataLength * 50) / containerWidth) * 45));
-    return angle;
-  };
+  // // Compute dynamic angle based on container width and number of data points
+  // const getLabelAngle = (dataLength, containerWidth) => {
+  //   if (dataLength <= 3) return 0;
+  //   // Minimum width per label = 50px (adjustable)
+  //   const angle = -Math.min(90, Math.max(0, ((dataLength * 50) / containerWidth) * 45));
+  //   return angle;
+  // };
   
 
   return (
@@ -39,10 +39,11 @@ const GenericLineChart = ({
       <h3 className="font-semibold mb-4">{title}</h3>
       <ResponsiveContainer width="100%" height={height}>
         
-        <LineChart data={data} style={style}>
+        <LineChart data={data} style={style} >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="timestamp"
+            padding={{ right: 10 }}
             angle={data.length > 3 ? -Math.min(90, (data.length - 3) * 3) : 0}
             textAnchor={data.length > 3 ? "end" : "middle"}
             tickFormatter={(value) => {
@@ -104,7 +105,7 @@ const GenericLineChart = ({
                 dot={{ r: 4 }}
                 activeDot={{ r: 6 }}
                 yAxisId={yAxisId}
-                strokeDasharray={yAxisId === "right" ? "5 1" : "none"} // optional styling
+                strokeDasharray={rightAxis && index === lines.length - 1 ? "5 1" : "none"} // optional styling
               />
             );
           })}

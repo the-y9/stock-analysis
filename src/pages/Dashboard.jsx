@@ -92,22 +92,21 @@ export default function Dashboard() {
 
       if (!grouped[key])
         grouped[key] = {
-          timestamp: key,
-          stockIn: 0,
-          stockOut: 0,
-          valueIn: 0,
-          valueOut: 0,
+          timestamp: key
         };
 
-      if (item.type === "in") {
-        grouped[key].stockIn += item.qty;
-        grouped[key].valueIn += item.value;
-      } else {
-        grouped[key].stockOut += item.qty;
-        grouped[key].valueOut += item.value;
-      }
+        if (item.type === "in") {
+          grouped[key].stockIn = (grouped[key].stockIn || 0) + item.qty;
+          grouped[key].valueIn = (grouped[key].valueIn || 0) + item.value;
+        } else if (item.type === "out") {
+          grouped[key].stockOut = (grouped[key].stockOut || 0) + item.qty;
+          grouped[key].valueOut = (grouped[key].valueOut || 0) + item.value;
+        }
     });
-    return Object.values(grouped);
+    // Filter out intervals that have neither stockIn nor stockOut
+  return Object.values(grouped).filter(
+    (entry) => entry.stockIn !== undefined || entry.stockOut !== undefined
+  );
   }, [processedData, interval]);
 
   // --- ✅ Stats Cards ---
@@ -312,7 +311,7 @@ export default function Dashboard() {
               { key: "stockIn", label: "Stock In" },
               { key: "stockOut", label: "Stock Out" },
             ]}
-            rightAxis
+            rightAxis={false}
             interval={interval}
           />
 

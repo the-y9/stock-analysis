@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, RefreshCcw } from "lucide-react";
+import { Search, RefreshCcw, Menu } from "lucide-react";
 import SideBar from "../components/SideBar";
 import NavSidebar from "./NavSidebar";
 import { useStockData } from "../context/StockDataContext";
@@ -106,13 +106,23 @@ const processedStockIn = useMemo(() => {
           <div>
             <h2 className="text-2xl font-semibold">Stock In</h2>
             <p className="text-gray-500 text-sm">
-              As of {new Date().toLocaleDateString("en-US", {
+              {new Date().toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
               })}
             </p>
-          </div>
+                  </div>
+                  
+          <div className="flex items-center gap-2">
+            <button
+              className="md:hidden p-2 rounded-lg border text-gray-700 hover:bg-gray-100"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={22} />
+            </button>
+            
+          </div>  
         </div>
 
         {/* --- Stock Summary --- */}
@@ -197,7 +207,7 @@ const processedStockIn = useMemo(() => {
                     {/* <td className="px-4 py-2">{row.rate}</td>
                     <td className="px-4 py-2">{row.value}</td> */}
                         <td className="px-4 py-2">
-                            {new Date(row.date).toLocaleDateString("en-US", {
+                            {row.date && new Date(row.date).toLocaleDateString("en-US", {
                                 month: "long",
                                 day: "2-digit",
                                 year: "numeric",

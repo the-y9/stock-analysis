@@ -22,7 +22,7 @@ export default function Sidebar() {
             className={`p-2 rounded-md cursor-pointer ${
               isActive
                 ? "bg-blue-100 text-blue-700 font-semibold" // active page style
-                : "text-gray-700 hover:bg-green-50"
+                : "text-gray-700 hover:bg-blue-50"
             }`}
           >
             {item.path ? <Link to={item.path}>{item.name}</Link> : item.name}
