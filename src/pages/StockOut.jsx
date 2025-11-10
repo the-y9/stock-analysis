@@ -4,7 +4,7 @@ import SideBar from "../components/SideBar";
 import NavSidebar from "./NavSidebar";
 import { useStockData } from "../context/StockDataContext";
 
-export default function StockIn() {
+export default function StockOut() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("product_name");
@@ -13,12 +13,12 @@ export default function StockIn() {
   const { stockData, loading, fetchData, lastFetched } = useStockData();
 
   // --- 🔢 Process stock-in list ---
-const processedStockIn = useMemo(() => {
-  const stockInList = Array.isArray(stockData?.stockin) ? stockData.stockin : [];
+const processedStockOut = useMemo(() => {
+  const stockOutList = Array.isArray(stockData?.stockout) ? stockData.stockout : [];
   const products = Array.isArray(stockData?.products) ? stockData.products : [];
-//   console.log(stockInList, products);
+//   console.log(stockOutList);
 
-  const rows = stockInList.map((item) => {
+  const rows = stockOutList.map((item) => {
     const product = products.find((p) => p.stock_no === item.product); // ✅ match by product code
     return {
       id: item.id,
@@ -27,7 +27,8 @@ const processedStockIn = useMemo(() => {
       qty: Number(item.qty) || 0,
       rate: Number(item.rate) || 0,
       value: (Number(item.qty) * Number(item.rate)).toFixed(2),
-      date: item.date || "",
+        date: item.date || "",
+      to_whom: item.to_whom || "",
     };
   });
 
@@ -56,8 +57,8 @@ const processedStockIn = useMemo(() => {
     );
   }
 
-  const totalQty = processedStockIn.reduce((sum, i) => sum + i.qty, 0);
-//   const totalValue = processedStockIn.reduce((sum, i) => sum + i.qty * i.rate, 0).toFixed(2);
+  const totalQty = processedStockOut.reduce((sum, i) => sum + i.qty, 0);
+//   const totalValue = processedStockOut.reduce((sum, i) => sum + i.qty * i.rate, 0).toFixed(2);
 
   // --- 🧭 Sort handler ---
   const handleSort = (field) => {
@@ -119,7 +120,7 @@ const processedStockIn = useMemo(() => {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center bg-white rounded-lg shadow p-4">
           <div>
             <p className="text-gray-500 text-sm">Total Items</p>
-            <p className="text-xl font-semibold">{processedStockIn.length}</p>
+            <p className="text-xl font-semibold">{processedStockOut.length}</p>
           </div>
           <div>
             <p className="text-gray-500 text-sm">Total Quantity</p>
@@ -132,7 +133,7 @@ const processedStockIn = useMemo(() => {
           <div>
             <p className="text-gray-500 text-sm">Categories</p>
             <p className="text-xl font-semibold">
-              {new Set(processedStockIn.map((p) => p.category)).size}
+              {new Set(processedStockOut.map((p) => p.category)).size}
             </p>
           </div>
         </div>
@@ -158,8 +159,9 @@ const processedStockIn = useMemo(() => {
               <tr>
                 {[
                 { key: "qty", label: "Qty" },
-                  { key: "product_name", label: "Product" },
-                  { key: "category", label: "Category" },
+                { key: "product_name", label: "Product" },
+                { key: "category", label: "Category" },
+                { key: "to_whom", label: "To Whom" },
                 //   { key: "rate", label: "Rate (₹)" },
                 //   { key: "value", label: "Value (₹)" },
                   { key: "date", label: "Date" },
@@ -182,22 +184,23 @@ const processedStockIn = useMemo(() => {
               </tr>
             </thead>
             <tbody>
-              {processedStockIn.length === 0 ? (
+              {processedStockOut.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="text-center text-gray-400 py-6">
                     No stock-in data available.
                   </td>
                 </tr>
               ) : (
-                processedStockIn.map((row) => (
+                processedStockOut.map((row) => (
                   <tr key={row.id} className="border-t hover:bg-gray-50 transition">
                     <td className="px-4 py-2">{row.qty}</td>
                     <td className="px-4 py-2">{row.product_name}</td>
                     <td className="px-4 py-2">{row.category}</td>
+                    <td className="px-4 py-2">{row.to_whom}</td>
                     {/* <td className="px-4 py-2">{row.rate}</td>
                     <td className="px-4 py-2">{row.value}</td> */}
                         <td className="px-4 py-2">
-                            {new Date(row.date).toLocaleDateString("en-US", {
+                            {row.Date && new Date(row.date).toLocaleDateString("en-US", {
                                 month: "long",
                                 day: "2-digit",
                                 year: "numeric",
