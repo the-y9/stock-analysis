@@ -4,7 +4,7 @@ import SideBar from "../components/SideBar";
 import NavSidebar from "./NavSidebar";
 import { useStockData } from "../context/StockDataContext";
 
-export default function StockOut() {
+export default function Products() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("product_name");
@@ -12,52 +12,45 @@ export default function StockOut() {
 
   const { stockData, loading, fetchData, lastFetched } = useStockData();
 
-  // --- 🔢 Process stock-in list ---
-const processedStockOut = useMemo(() => {
-  const stockOutList = Array.isArray(stockData?.stockout) ? stockData.stockout : [];
-  const products = Array.isArray(stockData?.products) ? stockData.products : [];
-//   console.log(stockOutList);
+  // --- 🔢 Process products list ---
+  const processedProducts = useMemo(() => {
+    const products = Array.isArray(stockData?.products) ? stockData.products : [];
 
-  const rows = stockOutList.map((item) => {
-    const product = products.find((p) => p.stock_no === item.product); // ✅ match by product code
-    return {
+    const rows = products.map((item) => ({
       id: item.id,
-      product_name: product?.product_name || item.product, // ✅ show name or fallback
-      category: product?.category || "Other",
+      stock_no: item.stock_no,
+      product_name: item.product_name || "Unnamed Product",
+      category: item.category || "Other",
       qty: Number(item.qty) || 0,
       rate: Number(item.rate) || 0,
-      value: (Number(item.qty) * Number(item.rate)).toFixed(2),
-        date: item.date || "",
-      to_whom: item.to_whom || "",
-    };
-  });
+    }));
 
-  // --- 🔍 Search filter ---
-  const filtered = rows.filter((row) =>
-    row.product_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    // --- 🔍 Search filter ---
+    const filtered = rows.filter((row) =>
+      row.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-  // --- 🔽 Sorting ---
-  const sorted = [...filtered].sort((a, b) => {
-    if (a[sortBy] < b[sortBy]) return sortOrder === "asc" ? -1 : 1;
-    if (a[sortBy] > b[sortBy]) return sortOrder === "asc" ? 1 : -1;
-    return 0;
-  });
+    // --- 🔽 Sorting ---
+    const sorted = [...filtered].sort((a, b) => {
+      if (a[sortBy] < b[sortBy]) return sortOrder === "asc" ? -1 : 1;
+      if (a[sortBy] > b[sortBy]) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
 
-  return sorted;
-}, [stockData, searchTerm, sortBy, sortOrder]);
+    return sorted;
+  }, [stockData, searchTerm, sortBy, sortOrder]);
 
   // --- ⏳ Handle Loading State ---
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen text-gray-500">
-        Loading stock-in data...
+        Loading products...
       </div>
     );
   }
 
-  const totalQty = processedStockOut.reduce((sum, i) => sum + i.qty, 0);
-//   const totalValue = processedStockOut.reduce((sum, i) => sum + i.qty * i.rate, 0).toFixed(2);
+  const totalProducts = processedProducts.length;
+  const totalQty = processedProducts.reduce((sum, i) => sum + i.qty, 0);
 
   // --- 🧭 Sort handler ---
   const handleSort = (field) => {
@@ -104,7 +97,7 @@ const processedStockOut = useMemo(() => {
         {/* --- Header --- */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-semibold">Stock In</h2>
+            <h2 className="text-2xl font-semibold">Products</h2>
             <p className="text-gray-500 text-sm">
               As of {new Date().toLocaleDateString("en-US", {
                 month: "long",
@@ -115,27 +108,23 @@ const processedStockOut = useMemo(() => {
           </div>
         </div>
 
-        {/* --- Stock Summary --- */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center bg-white rounded-lg shadow p-4">
+        {/* --- Products Summary --- */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 text-center bg-white rounded-lg shadow p-4">
           <div>
-            <p className="text-gray-500 text-sm">Total Items</p>
-            <p className="text-xl font-semibold">{processedStockOut.length}</p>
-          </div>
-          <div>
-            <p className="text-gray-500 text-sm">Total Quantity</p>
-            <p className="text-xl font-semibold">{totalQty}</p>
+            <p className="text-gray-500 text-sm">Total Products</p>
+            <p className="text-xl font-semibold">{totalProducts}</p>
           </div>
           {/* <div>
-            <p className="text-gray-500 text-sm">Total Value</p>
-            <p className="text-xl font-semibold">₹ {totalValue}</p>
+            <p className="text-gray-500 text-sm">Total Quantity</p>
+            <p className="text-xl font-semibold">{totalQty}</p>
           </div> */}
           <div>
             <p className="text-gray-500 text-sm">Categories</p>
             <p className="text-xl font-semibold">
-              {new Set(processedStockOut.map((p) => p.category)).size}
+              {new Set(processedProducts.map((p) => p.category)).size}
             </p>
           </div>
-        </div>
+              </div>
               
               {/* --- Search Bar --- */}
                 <div className="flex justify-start">
@@ -151,19 +140,17 @@ const processedStockOut = useMemo(() => {
                     </div>
                 </div>
 
-        {/* --- Stock Table --- */}
+        {/* --- Products Table --- */}
         <div className="bg-white rounded-lg shadow overflow-x-auto">
           <table className="min-w-full text-sm text-left">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
                 {[
-                { key: "qty", label: "Qty" },
-                { key: "product_name", label: "Product" },
-                { key: "category", label: "Category" },
-                { key: "to_whom", label: "To Whom" },
-                //   { key: "rate", label: "Rate (₹)" },
-                //   { key: "value", label: "Value (₹)" },
-                  { key: "date", label: "Date" },
+                  { key: "stock_no", label: "Product Code" },
+                  { key: "product_name", label: "Product Name" },
+                  { key: "category", label: "Category" },
+                  { key: "qty", label: "Qty" },
+                  { key: "rate", label: "Rate (₹)" },
                 ].map(({ key, label }) => (
                   <th
                     key={key}
@@ -183,28 +170,20 @@ const processedStockOut = useMemo(() => {
               </tr>
             </thead>
             <tbody>
-              {processedStockOut.length === 0 ? (
+              {processedProducts.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center text-gray-400 py-6">
-                    No stock-in data available.
+                  <td colSpan="5" className="text-center text-gray-400 py-6">
+                    No products available.
                   </td>
                 </tr>
               ) : (
-                processedStockOut.map((row) => (
+                processedProducts.map((row) => (
                   <tr key={row.id} className="border-t hover:bg-gray-50 transition">
-                    <td className="px-4 py-2">{row.qty}</td>
+                    <td className="px-4 py-2">{row.stock_no}</td>
                     <td className="px-4 py-2">{row.product_name}</td>
                     <td className="px-4 py-2">{row.category}</td>
-                    <td className="px-4 py-2">{row.to_whom}</td>
-                    {/* <td className="px-4 py-2">{row.rate}</td>
-                    <td className="px-4 py-2">{row.value}</td> */}
-                        <td className="px-4 py-2">
-                            {row.Date && new Date(row.date).toLocaleDateString("en-US", {
-                                month: "long",
-                                day: "2-digit",
-                                year: "numeric",
-                            })}
-                        </td>
+                    <td className="px-4 py-2">{row.qty}</td>
+                    <td className="px-4 py-2">{row.rate}</td>
                   </tr>
                 ))
               )}
