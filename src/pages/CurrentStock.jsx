@@ -11,7 +11,7 @@
     const [sortOrder, setSortOrder] = useState("asc");
 
     const { stockData, loading, fetchData, lastFetched } = useStockData();
-
+        
     // --- 🔢 Process stock list ---
     const processedStock = useMemo(() => {
         const currentStock = Array.isArray(stockData?.currentstock)
