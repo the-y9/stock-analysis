@@ -51,7 +51,17 @@ import COLORS from "./Colors.jsx";
               ))}
             </Pie>
             <Tooltip formatter={(value) => `${value}`} />
-            <Legend />
+            <Legend
+            layout="vertical"
+            align="right"
+            verticalAlign="middle"
+            wrapperStyle={{
+              maxHeight: 275,
+              overflowY: "auto",
+              maxWidth: 125
+            }}
+            />
+            
           </PieChart>
         </ResponsiveContainer>
       </div>

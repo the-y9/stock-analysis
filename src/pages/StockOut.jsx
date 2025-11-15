@@ -3,6 +3,7 @@ import { Search, RefreshCcw, Menu } from "lucide-react";
 import SideBar from "../components/SideBar";
 import NavSidebar from "./NavSidebar";
 import { useStockData } from "../context/StockDataContext";
+import { Link } from 'react-router-dom';
 
 export default function StockOut() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -121,6 +122,9 @@ const processedStockOut = useMemo(() => {
             >
               <Menu size={22} />
             </button>
+            <Link to="/sof" className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none">
+              + Stock Out
+            </Link>
             
           </div>  
         </div>
